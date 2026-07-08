@@ -10,7 +10,6 @@
     .tabs { display: flex; justify-content: center; gap: 20px; margin-bottom: 25px; }
     .tab-btn { background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; font-weight: 600; cursor: pointer; padding: 5px 10px; }
     .tab-btn.active { color: #22c55e; border-bottom: 3px solid #22c55e; }
-    .hidden { display: none; } /* ضفت دي عشان الفورم */
   </style>
 </head>
 <body>
@@ -87,7 +86,6 @@
       }
     }
 
-    // تسجيل حساب جديد
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('regUser').value;
@@ -104,16 +102,12 @@
         });
         const data = await res.json();
         if(res.ok) {
-          // حفظ نوع اليوزر وتسجيل دخوله على طول
-          localStorage.setItem('userType', role); 
-          localStorage.setItem('user', JSON.stringify(data.user));
-          alert(`تم إنشاء حسابك بنجاح! مرحباً ${username}`);
-          window.location.href = 'index.html';
+          alert('تم إنشاء حسابك بنجاح! يمكنك الآن تسجيل الدخول مباشرة.');
+          switchTab('login');
         } else { alert(data.message); }
       } catch(err) { alert('فشل الاتصال بالسيرفر لتسجيل الحساب!'); }
     });
 
-    // تسجيل الدخول
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const username = document.getElementById('loginUser').value;
@@ -127,10 +121,7 @@
         });
         const data = await res.json();
         if(res.ok) {
-          // هنا التعديل المهم: بنحفظ النوع اللي جاي من السيرفر
           localStorage.setItem('user', JSON.stringify(data.user));
-          localStorage.setItem('userType', data.user.role); // "owner" او "player"
-          
           alert(`مرحباً بك كابتن ${data.user.username}`);
           window.location.href = 'index.html';
         } else { alert(data.message); }
