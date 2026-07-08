@@ -9,6 +9,7 @@
 </head>
 <body>
 
+  <!-- ================= NAVBAR ================= -->
   <header>
     <nav class="navbar">
       <h1 class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">Kick Off</h1>
@@ -25,21 +26,23 @@
     </nav>
   </header>
 
+  <!-- ================= HERO SECTION ================= -->
   <section class="hero animate-fade-in">
     <div class="hero-text">
+      <!-- صوره احترافية خلف الكلمة المطلوبة -->
       <div class="hero-title-box">
         <h2>احجز ملعبك الاحترافي الآن بكل سهوله</h2>
       </div>
       
-      <div class="hero-buttons-group" style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px;">
-        <div id="ownerHeroSection"></div>
-        
-        <p style="margin-top: 5px;">أفضل ملاعب كرة القدم العشبية والمضاءة في انتظارك أنت وفريقك بجودة عالمية.</p>
-        <a href="booking.html" class="btn btn-gradient">احجز ملعبك الآن</a>
-      </div>
+      <!-- المكان المحدد للزرار تحت الكلمة مباشرة -->
+      <div id="heroOwnerBtnContainer" style="margin: 15px 0;"></div>
+      
+      <p>أفضل ملاعب كرة القدم العشبية والمضاءة في انتظارك أنت وفريقك بجودة عالمية.</p>
+      <a href="booking.html" class="btn btn-gradient">احجز ملعبك الآن</a>
     </div>
   </section>
 
+  <!-- ================= FIELDS SECTION ================= -->
   <section class="fields" id="fields">
     <h2 class="section-title">الملاعب المتميزة</h2>
     <div class="field-container">
@@ -67,6 +70,7 @@
     </div>
   </section>
 
+  <!-- ================= PRICING SECTION (REAL PLANS) ================= -->
   <section class="pricing" id="pricing">
     <h2 class="section-title">خطط الأسعار والاشتراكات الحقيقية</h2>
     <p style="text-align:center; color:#94a3b8; margin-top:-15px; margin-bottom:40px;">ادخل على خطط واشتراكات وأسعار بجد تناسب استخدامك الشخصي أو فريقك</p>
@@ -99,6 +103,7 @@
     </div>
   </section>
 
+  <!-- ================= REVIEWS SECTION ================= -->
   <section class="reviews" id="reviews">
     <h2 class="section-title">آراء وتقييمات اللاعبين</h2>
     <div class="reviews-container" id="dynamicReviewsContainer">
@@ -113,6 +118,7 @@
     </div>
   </section>
 
+  <!-- ================= FAQ SECTION ================= -->
   <section class="faq" id="faq">
     <h2 class="section-title">الأسئلة الشائعة</h2>
     <div class="faq-container">
@@ -127,23 +133,35 @@
     </div>
   </section>
 
+  <!-- ================= FOOTER ================= -->
   <footer class="contact">
     <p>© 2026 Kick Off - جميع الحقوق محفوظة لخدمات حجز الملاعب الاحترافية</p>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- السكربت المسؤول عن توزيع الأزرار بدقة وبدون تداخل -->
   <script>
-    // التحكم الديناميكي لظهور الأزرار حسب بيانات الحساب المسجل
     document.addEventListener("DOMContentLoaded", () => {
       const currentUser = JSON.parse(localStorage.getItem('user'));
-      const ownerHeroSection = document.getElementById('ownerHeroSection');
-      
-      if (currentUser && currentUser.role === 'owner' && ownerHeroSection) {
-        ownerHeroSection.innerHTML = `
-          <a href="owner.html" class="btn btn-gradient" style="background: linear-gradient(45deg, #a3e635, #22c55e); color: #05190e; font-size: 1.2rem; padding: 12px 40px; box-shadow: 0 0 20px rgba(163, 230, 53, 0.4);">
-             ⚙️ إدارة ملعبك من هنا
-          </a>
-        `;
+      const authSection = document.getElementById('authSection');
+      const heroOwnerBtnContainer = document.getElementById('heroOwnerBtnContainer');
+
+      if (currentUser) {
+        // 1. تحديث الهيدر فوق لبيانات الحساب والـ Logout
+        if (authSection) {
+          authSection.innerHTML = `
+            <span style="margin-left:15px; color:#22c55e; font-weight:600;">👋 أهلاً ${currentUser.username}</span>
+            <button onclick="localStorage.removeItem('user'); window.location.reload();" class="btn" style="padding: 8px 15px; background:#ef4444; border:none; cursor:pointer; color:white; border-radius:30px; font-family:'Cairo'; font-weight:600;">خروج</button>
+          `;
+        }
+
+        // 2. إظهار زرار "إدارة ملعبك" تحت كلمة احجز ملعبك الاحترافي مباشرة لو كان الحساب "owner"
+        if (currentUser.role === 'owner' && heroOwnerBtnContainer) {
+          heroOwnerBtnContainer.innerHTML = `
+            <a href="owner.html" class="btn" style="background: #22c55e; color: #05190e; font-size: 1.1rem; padding: 10px 35px; text-decoration: none; display: inline-block; border-radius: 30px; font-weight: 700; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);">
+              🟢 إدارة ملعبك
+            </a>
+          `;
+        }
       }
     });
 
