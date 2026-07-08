@@ -12,15 +12,15 @@
   <!-- ================= NAVBAR ================= -->
   <header>
     <nav class="navbar">
-      <h1 class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">Kick Off</h1>
+      <h1 class="logo">Kick Off</h1>
       <ul class="nav-links">
         <li><a href="#" class="nav-item">الرئيسية</a></li>
         <li><a href="#fields" class="nav-item">الملاعب</a></li>
         <li><a href="#pricing" class="nav-item">خطط الأسعار</a></li>
         <li><a href="#reviews" class="nav-item">آراء اللاعبين</a></li>
         <li><a href="#faq" class="nav-item">الأسئلة الشائعة</a></li>
-      </ul>
-      <div id="authSection">
+        <u1>
+     <div id="authSection">
         <a href="auth.html" class="btn btn-nav">تسجيل الدخول / اشتراك</a>
       </div>
     </nav>
@@ -32,11 +32,8 @@
       <!-- صوره احترافية خلف الكلمة المطلوبة -->
       <div class="hero-title-box">
         <h2>احجز ملعبك الاحترافي الآن بكل سهوله</h2>
+       
       </div>
-      
-      <!-- المكان المحدد للزرار تحت الكلمة مباشرة -->
-      <div id="heroOwnerBtnContainer" style="margin: 15px 0;"></div>
-      
       <p>أفضل ملاعب كرة القدم العشبية والمضاءة في انتظارك أنت وفريقك بجودة عالمية.</p>
       <a href="booking.html" class="btn btn-gradient">احجز ملعبك الآن</a>
     </div>
@@ -89,7 +86,7 @@
 
       <div class="price-card glass-card featured-plan">
         <div class="badge">الخيار الأوفر والأكثر طلباً للفرق</div>
-        <h3>الاشتراق الشهري الذهبي</h3>
+        <h3>الاشتراك الشهري الذهبي</h3>
         <div class="amount">1,000 EGP<span>/ شهرياً</span></div>
         <ul>
           <li>✔ 8 ساعات حجز شهرياً (ساعتين كل أسبوع ثابته)</li>
@@ -138,33 +135,8 @@
     <p>© 2026 Kick Off - جميع الحقوق محفوظة لخدمات حجز الملاعب الاحترافية</p>
   </footer>
 
-  <!-- السكربت المسؤول عن توزيع الأزرار بدقة وبدون تداخل -->
+  <script src="script.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const currentUser = JSON.parse(localStorage.getItem('user'));
-      const authSection = document.getElementById('authSection');
-      const heroOwnerBtnContainer = document.getElementById('heroOwnerBtnContainer');
-
-      if (currentUser) {
-        // 1. تحديث الهيدر فوق لبيانات الحساب والـ Logout
-        if (authSection) {
-          authSection.innerHTML = `
-            <span style="margin-left:15px; color:#22c55e; font-weight:600;">👋 أهلاً ${currentUser.username}</span>
-            <button onclick="localStorage.removeItem('user'); window.location.reload();" class="btn" style="padding: 8px 15px; background:#ef4444; border:none; cursor:pointer; color:white; border-radius:30px; font-family:'Cairo'; font-weight:600;">خروج</button>
-          `;
-        }
-
-        // 2. إظهار زرار "إدارة ملعبك" تحت كلمة احجز ملعبك الاحترافي مباشرة لو كان الحساب "owner"
-        if (currentUser.role === 'owner' && heroOwnerBtnContainer) {
-          heroOwnerBtnContainer.innerHTML = `
-            <a href="owner.html" class="btn" style="background: #22c55e; color: #05190e; font-size: 1.1rem; padding: 10px 35px; text-decoration: none; display: inline-block; border-radius: 30px; font-weight: 700; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);">
-              🟢 إدارة ملعبك
-            </a>
-          `;
-        }
-      }
-    });
-
     // جلب التقييمات الحقيقية من السيرفر وعرضها
     async function loadReviews() {
       try {
