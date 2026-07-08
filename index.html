@@ -6,23 +6,6 @@
   <title>Kick Off | منصة حجز الملاعب الأولى</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    .btn-manage {
-      background: linear-gradient(90deg, #22c55e, #16a34a);
-      color: #052e16;
-      padding: 14px 35px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      text-decoration: none;
-      display: inline-block;
-      margin: 15px 10px;
-      border: none;
-      cursor: pointer;
-      display: none; /* مخفي افتراضي */
-    }
-    .btn-manage:hover { transform: translateY(-2px); }
-  </style>
 </head>
 <body>
 
@@ -36,7 +19,7 @@
         <li><a href="#pricing" class="nav-item">خطط الأسعار</a></li>
         <li><a href="#reviews" class="nav-item">آراء اللاعبين</a></li>
         <li><a href="#faq" class="nav-item">الأسئلة الشائعة</a></li>
-      </ul>
+        <u1>
      <div id="authSection">
         <a href="auth.html" class="btn btn-nav">تسجيل الدخول / اشتراك</a>
       </div>
@@ -46,19 +29,17 @@
   <!-- ================= HERO SECTION ================= -->
   <section class="hero animate-fade-in">
     <div class="hero-text">
+      <!-- صوره احترافية خلف الكلمة المطلوبة -->
       <div class="hero-title-box">
         <h2>احجز ملعبك الاحترافي الآن بكل سهوله</h2>
-        
-        <!-- الزرار ده هيظهر بس لصاحب الملعب -->
-        <a href="manage.html" id="manageBtn" class="btn-manage">إدارة ملعبك ⚽</a>
-
+       
       </div>
       <p>أفضل ملاعب كرة القدم العشبية والمضاءة في انتظارك أنت وفريقك بجودة عالمية.</p>
       <a href="booking.html" class="btn btn-gradient">احجز ملعبك الآن</a>
     </div>
   </section>
 
-  <!-- باقي الاقسام زي ما هي -->
+  <!-- ================= FIELDS SECTION ================= -->
   <section class="fields" id="fields">
     <h2 class="section-title">الملاعب المتميزة</h2>
     <div class="field-container">
@@ -86,25 +67,77 @@
     </div>
   </section>
 
+  <!-- ================= PRICING SECTION (REAL PLANS) ================= -->
   <section class="pricing" id="pricing">
     <h2 class="section-title">خطط الأسعار والاشتراكات الحقيقية</h2>
+    <p style="text-align:center; color:#94a3b8; margin-top:-15px; margin-bottom:40px;">ادخل على خطط واشتراكات وأسعار بجد تناسب استخدامك الشخصي أو فريقك</p>
+    <div class="pricing-container">
+      <div class="price-card glass-card">
+        <h3>باقة الحجز الحر (بالساعة)</h3>
+        <div class="amount">150 EGP<span>/ ساعة</span></div>
+        <ul>
+          <li>✔ حجز الملعب المفضل لديك فوراً</li>
+          <li>✔ توفير كرة قدم احترافية أصلية مجاناً</li>
+          <li>✔ سترات تمييز ملونة (Bibs) للفريقين</li>
+          <li>✔ غرف مياه معدنية منعشة ومبردة</li>
+        </ul>
+        <a href="booking.html" class="btn btn-gradient">احجز ساعتك الآن</a>
+      </div>
+
+      <div class="price-card glass-card featured-plan">
+        <div class="badge">الخيار الأوفر والأكثر طلباً للفرق</div>
+        <h3>الاشتراك الشهري الذهبي</h3>
+        <div class="amount">1,000 EGP<span>/ شهرياً</span></div>
+        <ul>
+          <li>✔ 8 ساعات حجز شهرياً (ساعتين كل أسبوع ثابته)</li>
+          <li>✔ تثبيت موعدك المفضل أسبوعياً دون أي تعارض</li>
+          <li>✔ أولوية مطلقة وأسبقية حجز مضمونة</li>
+          <li>✔ تصوير لقطات من مهارات وأهداف فريقك فيديو</li>
+          <li>✔ توفير حكم ساحة معتمد للمباريات الحماسية بخصم 50%</li>
+        </ul>
+        <a href="booking.html" class="btn btn-gradient">اشترك في الباقة الآن</a>
+      </div>
+    </div>
   </section>
 
+  <!-- ================= REVIEWS SECTION ================= -->
   <section class="reviews" id="reviews">
     <h2 class="section-title">آراء وتقييمات اللاعبين</h2>
-    <div class="reviews-container" id="dynamicReviewsContainer"></div>
+    <div class="reviews-container" id="dynamicReviewsContainer">
+      <div class="review-item glass-card">
+        <p>"أفضل ملاعب في القاهرة، التنظيم ممتاز والعشب جودته عالية جداً والنظام الصوتي رائع ومريح للعب."</p>
+        <h4>كابتن أحمد حسن</h4>
+      </div>
+      <div class="review-item glass-card">
+        <p>"تطبيق وموقع الحجز سهل جداً، والخدمة هناك والإضاءة الليلية في ستاد VIP خرافية بجد تستحق."</p>
+        <h4>محمد علي</h4>
+      </div>
+    </div>
   </section>
 
+  <!-- ================= FAQ SECTION ================= -->
   <section class="faq" id="faq">
     <h2 class="section-title">الأسئلة الشائعة</h2>
+    <div class="faq-container">
+      <div class="faq-item glass-card">
+        <div class="faq-question"><h3>هل يمكنني إلغاء الحجز أو تعديله؟</h3></div>
+        <div class="faq-answer"><p>نعم، يمكن لصاحب الملعب أو النظام تعديل وإلغاء حجزك بناءً على طلبك قبل الموعد بـ 24 ساعة.</p></div>
+      </div>
+      <div class="faq-item glass-card">
+        <div class="faq-question"><h3>كيف تعمل ميزة أسبقية الحجز؟</h3></div>
+        <div class="faq-answer"><p>النظام يمنع حجز نفس الملعب في نفس الساعة والتاريخ لأكثر من شخص، وبذلك يحصل أول من حجز وطلب على الموعد مباشرة ويرفض النظام أي تعارض.</p></div>
+      </div>
+    </div>
   </section>
 
+  <!-- ================= FOOTER ================= -->
   <footer class="contact">
     <p>© 2026 Kick Off - جميع الحقوق محفوظة لخدمات حجز الملاعب الاحترافية</p>
   </footer>
 
   <script src="script.js"></script>
   <script>
+    // جلب التقييمات الحقيقية من السيرفر وعرضها
     async function loadReviews() {
       try {
         const res = await fetch('http://localhost:3000/api/reviews');
@@ -121,27 +154,6 @@
       } catch(e) { console.log("سيرفر التقييمات غير متصل حالياً"); }
     }
     loadReviews();
-
-    // كود جديد: اظهار الزرار لصاحب الملعب فقط
-    document.addEventListener('DOMContentLoaded', function() {
-      const userType = localStorage.getItem('userType'); // "owner" او "player"
-      const manageBtn = document.getElementById('manageBtn');
-      const authSection = document.getElementById('authSection');
-
-      if(userType === 'owner'){
-        manageBtn.style.display = 'inline-block'; // اظهر الزرار
-        authSection.innerHTML = `<a href="#" onclick="logout()" class="btn btn-nav">تسجيل خروج</a>`;
-      } else if(userType === 'player'){
-        manageBtn.style.display = 'none'; // اخفيه
-        authSection.innerHTML = `<a href="#" onclick="logout()" class="btn btn-nav">تسجيل خروج</a>`;
-      }
-    });
-
-    function logout(){
-      localStorage.removeItem('userType');
-      localStorage.removeItem('userName');
-      window.location.reload();
-    }
   </script>
 </body>
 </html>
