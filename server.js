@@ -7,13 +7,13 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// قاعدة البيانات المؤقتة في الذاكرة
+// قاعدة البيانات المؤقتة
 const USERS = []; 
 const BOOKINGS = []; 
 const REVIEWS = [];
 const OWNER_PRICES = {}; 
 
-// 1. تسعير وتسجيل المستخدمين
+// 1. Register Route
 app.post('/api/register', async (req, res) => {
     const { username, phone, password, role, location } = req.body;
     if (USERS.find(u => u.username === username)) {
@@ -34,7 +34,7 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'تم تسجيل الحساب بنجاح' });
 });
 
-// 2. تسجيل الدخول
+// 2. Login Route
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     const user = USERS.find(u => u.username === username);
@@ -42,57 +42,67 @@ app.post('/api/login', async (req, res) => {
     if (!user) return res.status(400).json({ message: 'اسم المستخدم غير موجود بالنظام!' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'كلمة المرور غير صحيحة!' });
+    if (!isMatch) return res.status(400).json({ message: 'كلمة المرور التي أدخلتها خاطئة!' });
 
-    res.json({ user: { id: user.id, username: user.username, role: user.role, location: user.location, phone: user.phone } });
-});
-
-// 3. جلب جميع الحجوزات للمالك
-app.get('/api/bookings', (req, res) => {
-    res.json(BOOKINGS);
-});
-
-// 4. إنشاء الحجز مع خيار الدفع الإلكتروني وتوليد الإيصال
-app.post('/api/bookings', (req, res) => {
-    const { name, phone, location, type, date, time, hours, userId, paymentMethod } = req.body;
-
-    // فحص منع التعارض (إذا كان الملعب محجوز في نفس المكان والتوقيت)
-    const hasConflict = BOOKINGS.find(b => b.location === location && b.type === type && b.date === date && b.time === time);
-    if (hasConflict) {
-        return res.status(400).json({ message: 'عذراً، هذا الوقت محجوز بالفعل! يرجى اختيار موعد آخر.' });
-    }
-
-    // حساب السعر الإجمالي (150 كمعدل افتراضي أو حسب تسعير المالك)
-    const hourlyRate = (OWNER_PRICES[location] && OWNER_PRICES[location].hourlyRate) ? OWNER_PRICES[location].hourlyRate : 150;
-    const totalAmount = hourlyRate * parseInt(hours);
-
-    // توليد رقم فاتورة أو إيصال فريد
-    const transactionId = 'TXN-' + Math.floor(100000 + Math.random() * 900000);
-
-    const newBooking = {
-        id: Date.now(),
-        transactionId,
-        name,
-        phone,
-        location,
-        type,
-        date,
-        time,
-        hours,
-        userId,
-        paymentMethod,
-        totalAmount,
-        status: 'مؤكد ومدفوع'
-    };
-
-    BOOKINGS.push(newBooking);
-    res.status(201).json({ 
-        message: 'تم تأكيد حجزك بنجاح ومعالجة عملية الدفع الإلكتروني!',
-        booking: newBooking
+    res.json({
+        message: 'تم تسجيل الدخول بنجاح',
+        user: { id: user.id, username: user.username, role: user.role, location: user.location }
     });
 });
 
-// 5. حذف أو رفض الحجز من لوحة المالك
+// 3. Create Booking Route (With Conflict Check, Payment Processing, & Auto Invoice ID Generator)
+app.post('/api/bookings', (req, res) => {
+    const { playerName, phone, fieldType, date, time, hours, location, userId, paymentMethod } = req.body;
+    
+    // فحص التعارض لمنع تكرار نفس الساعة في نفس الملعب والمنطقة
+    const hasConflict = BOOKINGS.find(b => 
+        b.location === location && 
+        b.fieldType === fieldType && 
+        b.date === date && 
+        b.time === time
+    );
+
+    if (hasConflict) {
+        return res.status(400).json({ message: 'عفواً، هذا الموعد محجوز مسبقاً لشخص آخر. الحجز بأسبقية الطلب!' });
+    }
+
+    // حساب إجمالي التكلفة بناءً على تسعيرة صاحب الملعب الخاصة بالمنطقة أو القيمة الافتراضية 150
+    const hourlyRate = (OWNER_PRICES[location] && OWNER_PRICES[location].hourlyRate) ? OWNER_PRICES[location].hourlyRate : 150;
+    const totalAmount = hourlyRate * parseInt(hours || 1);
+
+    // توليد رقم إيصال مالي مرجعي وحيد (Transaction ID)
+    const transactionId = 'KO-' + Math.floor(100000 + Math.random() * 900000);
+
+    const newBooking = { 
+        id: Date.now(), 
+        transactionId,
+        playerName, 
+        phone, 
+        fieldType, 
+        date, 
+        time, 
+        hours: hours || 1,
+        location, 
+        userId,
+        paymentMethod,
+        totalAmount,
+        status: 'مؤكد ومدفوع إلكترونياً'
+    };
+    
+    BOOKINGS.push(newBooking);
+    res.status(201).json({ message: 'تم تسجيل حجزك بنجاح ومعالجة دفعتك الإلكترونية!', booking: newBooking });
+});
+
+// 4. Get Bookings Route (Filtered by Owner Location)
+app.get('/api/bookings', (req, res) => {
+    const ownerLocation = req.query.location;
+    if (ownerLocation) {
+        return res.json(BOOKINGS.filter(b => b.location === ownerLocation));
+    }
+    res.json(BOOKINGS);
+});
+
+// 5. Owner Delete/Reject Booking Route
 app.delete('/api/bookings/:id', (req, res) => {
     const bookingId = parseInt(req.params.id);
     const index = BOOKINGS.findIndex(b => b.id === bookingId);
@@ -105,14 +115,14 @@ app.delete('/api/bookings/:id', (req, res) => {
     }
 });
 
-// 6. تحديث الأسعار للمالك
+// 6. Owner Price Update Route
 app.post('/api/prices', (req, res) => {
     const { location, hourlyRate, subRate } = req.body;
     OWNER_PRICES[location] = { hourlyRate, subRate };
-    res.json({ message: 'تم تحديث خطط الأسعار والاشتراكات بنجاح!' });
+    res.json({ message: 'تم تحديث خطط الأسعار والاشتراكات الخاصة بملاعبك بنجاح!' });
 });
 
-// 7. جلب الأسعار الديناميكية للملاعب
+// 7. Dynamic Price Fetch Route
 app.get('/api/prices', (req, res) => {
     const location = req.query.location;
     if (location && OWNER_PRICES[location]) {
@@ -121,18 +131,21 @@ app.get('/api/prices', (req, res) => {
     res.json({ hourlyRate: 150, subRate: 1000 });
 });
 
-// 8. إرسال وتقييم الآراء
+// 8. Submit Review Route
 app.post('/api/reviews', (req, res) => {
     const { name, review } = req.body;
     if (!review) return res.status(400).json({ message: 'الرجاء كتابة الرأي أولاً!' });
     
-    const newReview = { id: Date.now(), name, review };
+    const newReview = { id: Date.now(), name: name || 'لاعب زائر', review };
     REVIEWS.push(newReview);
-    res.json({ message: 'شكراً لك على تقييمك الاحترافي!' });
+    res.status(201).json({ message: 'شكراً لمشاركتنا رأيك القيم!' });
 });
 
+// 9. Get Reviews Route
 app.get('/api/reviews', (req, res) => {
     res.json(REVIEWS);
 });
 
-app.listen(3000, () => console.log('السيرفر يعمل بنجاح على المنفذ 3000'));
+app.listen(3000, () => {
+    console.log('سيرفر Kick Off يعمل بنجاح الآن على الرابط: http://localhost:3000');
+});
