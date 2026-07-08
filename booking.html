@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>حجز ملعبك والدفع الإلكتروني | Kick Off</title>
+  <title>حجز ملعبك | Kick Off</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- مكتبة توليد الـ QR Code ديناميكياً وبسرعة -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    /* واجهة الإيصال المنبثقة الكاملة */
+    /* واجهة إيصال الدفع المنبثقة متناسقة مع التصميم الغامق والأخضر للموقع */
     .receipt-modal {
       display: none;
       position: fixed;
@@ -20,38 +21,32 @@
       padding: 20px;
     }
     .receipt-card {
-      background: #ffffff;
-      color: #333333;
+      background: rgba(13, 77, 45, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
       border-radius: 16px;
       padding: 30px;
       max-width: 450px;
       width: 100%;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 8px 32px rgba(34, 197, 94, 0.25);
       font-family: 'Cairo', sans-serif;
       text-align: center;
-      border-top: 8px solid #22c55e;
     }
-    .receipt-card h3 { color: #052e16; font-size: 1.6rem; margin-bottom: 5px; }
-    .receipt-divider { border-top: 2px dashed #ddd; margin: 15px 0; }
-    .receipt-details { text-align: right; font-size: 0.95rem; line-height: 1.8; margin-bottom: 20px; }
-    .receipt-details span { font-weight: bold; color: #052e16; }
-    #qrcode { display: flex; justify-content: center; margin: 20px 0; }
-    .btn-print { background: #22c55e; color: #fff; border: none; padding: 10px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; margin-top: 10px; width: 100%; }
-    .btn-close-receipt { background: #cbd5e1; color: #333; border: none; padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; margin-top: 10px; width: 100%; }
+    .receipt-card h3 { color: #22c55e; font-size: 1.6rem; margin-bottom: 5px; }
+    .receipt-divider { border-top: 2px dashed rgba(255,255,255,0.2); margin: 15px 0; }
+    .receipt-details { text-align: right; font-size: 0.95rem; line-height: 1.9; margin-bottom: 20px; }
+    .receipt-details span { font-weight: bold; color: #a3e635; }
+    #qrcode { display: flex; justify-content: center; margin: 20px 0; background: white; padding: 10px; border-radius: 8px; width: fit-content; margin-left: auto; margin-right: auto; }
+    .btn-print { background: linear-gradient(45deg, #22c55e, #a3e635); color: #05190e; border: none; padding: 10px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; margin-top: 10px; width: 100%; box-shadow: 0 4px 15px rgba(34,197,94,0.4); }
+    .btn-close-receipt { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 8px 20px; border-radius: 30px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; margin-top: 10px; width: 100%; }
   </style>
 </head>
 <body>
-
-  <header style="position: static; margin-bottom: 20px;">
-    <nav class="navbar" style="padding: 15px 8%;">
-      <h1 class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">Kick Off</h1>
-      <a href="index.html" class="btn" style="background: rgba(255,255,255,0.1); color: #fff; text-decoration: none; padding: 8px 20px; border-radius: 20px;">الرئيسية ←</a>
-    </nav>
-  </header>
-
-  <section class="booking-page" style="padding: 20px 8%; max-width: 650px; margin: auto;">
+  <section class="booking-page">
     <div class="booking-form glass-card animate-fade-in">
-      <h2 style="text-align: center; margin-bottom: 20px; color: #22c55e;">احجز ملعبك وسدد رسوم الحجز</h2>
+      <h2>احجز ملعبك الاحترافي</h2>
       <form id="realBookingForm">
         <input type="text" id="bookName" placeholder="اسمك بالكامل" required class="form-input">
         <input type="tel" id="bookPhone" placeholder="رقم الهاتف للتواصل" required class="form-input">
@@ -67,62 +62,66 @@
           <option value="">اختر نوع ومقاس الملعب</option>
           <option value="الملعب الخماسي 5x5">الملعب الخماسي 5x5</option>
           <option value="الملعب السباعي 7x7">الملعب السباعي 7x7</option>
-          <option value="ستاد الكلاسيكو VIP">ستاد الكلاسيكو VIP</option>
+          <option value="ستاد VIP المضيء">ستاد VIP المضيء</option>
         </select>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-          <div>
-            <label style="font-size: 0.85rem; color: #94a3b8;">تاريخ الحجز:</label>
-            <input type="date" id="bookDate" required class="form-input">
-          </div>
-          <div>
-            <label style="font-size: 0.85rem; color: #94a3b8;">توقيت المباراة:</label>
-            <input type="time" id="bookTime" required class="form-input">
-          </div>
+        <div style="display:flex; gap:10px;">
+          <input type="time" id="bookTime" required class="form-input" style="width:50%;">
+          <input type="date" id="bookDate" required class="form-input" style="width:50%;">
         </div>
 
-        <label style="font-size: 0.85rem; color: #94a3b8;">عدد الساعات المطلوبة للحجز:</label>
-        <input type="number" id="bookHours" min="1" max="6" value="1" required class="form-input">
+        <label style="color:#22c55e; margin-bottom:5px; font-weight:600; display:block;">كم ساعة تريد حجز الملعب؟</label>
+        <input type="number" id="bookHours" placeholder="عدد الساعات (مثال: 2)" min="1" max="6" value="1" required class="form-input">
 
-        <label style="font-size: 0.85rem; color: #22c55e; font-weight: bold;">اختر طريقة المحفظة والدفع الإلكتروني:</label>
+        <!-- حقل الدفع الجديد -->
+        <label style="color:#22c55e; margin-bottom:5px; font-weight:600; display:block;">طريقة الدفع الإلكتروني المباشر:</label>
         <select id="paymentMethod" required class="form-input" style="border: 1px solid #22c55e; background: rgba(34, 197, 94, 0.1);">
-          <option value="">-- حدد المحفظة لإرسال الدفعة --</option>
+          <option value="">-- حدد وسيلة الدفع لتأكيد الحجز --</option>
           <option value="فودافون كاش (Vodafone Cash)">📱 فودافون كاش</option>
-          <option value="انستا باي (InstaPay)">💸 انستا باي - تحويل بنكي سريع</option>
+          <option value="انستا باي (InstaPay)">💸 انستا باي - تحويل فوري</option>
           <option value="اورانج كاش (Orange Cash)">🍊 أورانج كاش</option>
         </select>
 
-        <button type="submit" class="btn btn-gradient" style="width: 100%; padding: 14px; font-size: 1.1rem; margin-top: 15px;">تأكيد الدفع وحجز الملعب الآن</button>
+        <button type="submit" class="btn btn-gradient" style="width:100%; border:none; margin-top:10px;">تأكيد الحجز الفوري</button>
       </form>
+
+      <div class="review-box" style="margin-top:25px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+        <h3 style="font-size:1.1rem; color:#a3e635; margin-bottom:10px;">شاركنا برأيك وتجربتك معنا</h3>
+        <textarea id="playerReviewText" placeholder="اكتب رأيك أو اقتراحك هنا بكل صراحة..." class="form-input" style="height:70px; resize:none;"></textarea>
+        <button type="button" onclick="sendPlayerReview()" class="btn" style="background:#2563eb; color:white; width:100%; padding:8px; border:none; cursor:pointer; border-radius:5px;">إرسال رأيي</button>
+      </div>
+
+      <a href="index.html" class="back-btn" style="display:block; text-align:center; margin-top:15px; color:#94a3b8; text-decoration:none;">← العودة للرئيسية</a>
     </div>
   </section>
 
+  <!-- ================= نافذة إيصال الدفع الكامل و الـ QR CODE ================= -->
   <div id="receiptModal" class="receipt-modal">
     <div class="receipt-card animate-fade-in">
       <h3>إيصال تأكيد الدفع</h3>
-      <p style="color: #666; font-size: 0.85rem;">منصة Kick Off لإدارة الملاعب</p>
+      <p style="color: #cbd5e1; font-size: 0.85rem;">منصة Kick Off للملاعب الاحترافية</p>
       
       <div class="receipt-divider"></div>
       
       <div class="receipt-details">
-        <div>الرقم المرجعي للمعاملة: <span id="rTxn"></span></div>
+        <div>الرقم المرجعي (ID): <span id="rTxn"></span></div>
         <div>اسم الكابتن: <span id="rName"></span></div>
-        <div>رقم التليفون: <span id="rPhone"></span></div>
-        <div>موقع وتواجد الملعب: <span id="rLocation"></span></div>
-        <div>حجم الملعب المختار: <span id="rType"></span></div>
-        <div>تاريخ المباراة: <span id="rDate"></span></div>
-        <div>توقيت اللعب: <span id="rTime"></span></div>
-        <div>إجمالي الوقت: <span id="rHours"></span> ساعة</div>
-        <div>قناة وسيلة الدفع: <span id="rMethod"></span></div>
-        <div style="border-top: 1px solid #eee; margin-top: 5px; padding-top: 5px; font-size: 1.15rem;">المبلغ الإجمالي المدفوع: <span id="rTotal" style="color: #22c55e;"></span> EGP</div>
+        <div>رقم الهاتف: <span id="rPhone"></span></div>
+        <div>الموقع الجغرافي: <span id="rLocation"></span></div>
+        <div>نوع الملعب: <span id="rType"></span></div>
+        <div>التاريخ والوقت: <span id="rDate"></span> في تمام الساعة <span id="rTime"></span></div>
+        <div>عدد الساعات المحجوزة: <span id="rHours"></span> ساعة</div>
+        <div>طريقة الدفع المعتمدة: <span id="rMethod"></span></div>
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 8px; padding-top: 8px; font-size: 1.15rem;">الإجمالي المدفوع: <span id="rTotal" style="color: #22c55e;"></span> EGP</div>
       </div>
 
       <div class="receipt-divider"></div>
-      <p style="font-size: 0.8rem; color: #666;">قم بإظهار رمز الـ QR التالي لمسئول البوابة لتسجيل دخولك</p>
+      <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 10px;">يرجى مسح رمز الـ QR التالي عند البوابة لتسهيل الدخول</p>
       
+      <!-- حاوية الباركود الرقمي -->
       <div id="qrcode"></div>
 
-      <button class="btn-print" onclick="window.print()">🖨️ طباعة الإيصال أو حفظه كـ PDF</button>
+      <button class="btn-print" onclick="window.print()">🖨️ طباعة أو حفظ الفاتورة</button>
       <button class="btn-close-receipt" onclick="window.location.href='index.html'">العودة للرئيسية</button>
     </div>
   </div>
@@ -130,25 +129,21 @@
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const user = JSON.parse(localStorage.getItem('user'));
-      if(!user) {
-        alert('تنبيه: يجب عليك تسجيل الدخول أولاً قبل البدء بحجز الملاعب!');
-        window.location.href = 'auth.html';
-        return;
-      }
+      if(user) { document.getElementById('bookName').value = user.username; }
 
-      // حقن البيانات المسجلة تلقائياً للاعب
-      document.getElementById('bookName').value = user.username || '';
-      document.getElementById('bookPhone').value = user.phone || '';
-
-      const form = document.getElementById('realBookingForm');
-      form.addEventListener('submit', async (e) => {
+      document.getElementById('realBookingForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        if(!user) {
+          alert('عذراً! يجب عليك تسجيل الدخول أولاً كـ لاعب لتتمكن من حجز الملاعب.');
+          window.location.href = 'auth.html';
+          return;
+        }
 
         const bookingData = {
-          name: document.getElementById('bookName').value,
+          playerName: document.getElementById('bookName').value,
           phone: document.getElementById('bookPhone').value,
-          location: document.getElementById('bookLocation').value,
-          type: document.getElementById('bookType').value,
+          location: document.getElementById('bookLocation').value, 
+          fieldType: document.getElementById('bookType').value,
           date: document.getElementById('bookDate').value,
           time: document.getElementById('bookTime').value,
           hours: document.getElementById('bookHours').value,
@@ -167,37 +162,59 @@
           if(res.ok) {
             alert(data.message);
             
-            // حقن تفاصيل إيصال الدفع الكامل بالبيانات الراجعة من السيرفر
+            // حقن تفاصيل إيصال الدفع الكامل بالبيانات المستلمة من السيرفر
             document.getElementById('rTxn').innerText = data.booking.transactionId;
-            document.getElementById('rName').innerText = data.booking.name;
+            document.getElementById('rName').innerText = data.booking.playerName;
             document.getElementById('rPhone').innerText = data.booking.phone;
             document.getElementById('rLocation').innerText = data.booking.location;
-            document.getElementById('rType').innerText = data.booking.type;
+            document.getElementById('rType').innerText = data.booking.fieldType;
             document.getElementById('rDate').innerText = data.booking.date;
             document.getElementById('rTime').innerText = data.booking.time;
             document.getElementById('rHours').innerText = data.booking.hours;
             document.getElementById('rMethod').innerText = data.booking.paymentMethod;
             document.getElementById('rTotal').innerText = data.booking.totalAmount;
 
-            // تفريغ الباركود القديم وتوليد الباركود الجديد تلقائياً
+            // مسح وتوليد باركود فريد يحتوي على تفاصيل الحجز الأمنية لحارس الملعب
             document.getElementById('qrcode').innerHTML = "";
-            const textString = `Ref:${data.booking.transactionId}|Name:${data.booking.name}|Field:${data.booking.type}|Date:${data.booking.date}|Time:${data.booking.time}`;
+            const qrText = `Ref:${data.booking.transactionId} | Player:${data.booking.playerName} | Field:${data.booking.fieldType} | Time:${data.booking.time}`;
             new QRCode(document.getElementById("qrcode"), {
-              text: textString,
-              width: 140,
-              height: 140
+              text: qrText,
+              width: 130,
+              height: 130
             });
 
-            // إظهار نافذة إيصال الفاتورة الإلكترونية الكاملة
+            // إظهار نافذة الفاتورة المنبثقة فوراً
             document.getElementById('receiptModal').style.display = 'flex';
           } else {
             alert(data.message);
           }
         } catch(err) {
-          alert('خطأ في الاتصال بالسيرفر، تأكد من تشغيل Node.js أولاً!');
+          alert('فشل الاتصال بسيرفر الحجوزات، تأكد من تشغيل السيرفر أولاً!');
         }
       });
     });
+
+    async function sendPlayerReview() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const reviewText = document.getElementById('playerReviewText').value;
+      if(!reviewText) return alert('الرجاء كتابة رأيك قبل الضغط على إرسال');
+
+      try {
+        const res = await fetch('http://localhost:3000/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: user ? user.username : 'لاعب زائر',
+            review: reviewText
+          })
+        });
+        const data = await res.json();
+        if(res.ok) {
+          alert(data.message);
+          document.getElementById('playerReviewText').value = '';
+        }
+      } catch(err) { alert('فشل إرسال التقييم للسيرفر.'); }
+    }
   </script>
 </body>
 </html>
