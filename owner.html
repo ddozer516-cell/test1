@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة تحكم صاحب الملعب | Kick Off</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    .owner-page { padding: 100px 8% 40px; min-height: 100vh; }
+    .welcome-box { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+    .requests-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: right; }
+    .requests-table th, .requests-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .requests-table th { background-color: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .btn-reject { background: #ef4444; color: #fff; padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .btn-reject:hover { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+  <section class="owner-page">
+    <div class="welcome-box glass-card" style="padding:20px;">
+      <div>
+        <h2>مرحباً بك، <span id="ownerName" style="color:#22c55e;">صاحب الملعب</span> 👋</h2>
+        <p style="color:#94a3b8; margin-top:5px;">منطقة إدارة ومراقبة حجوزات ملاعب منطقة: <span id="ownerLoc" style="color:#a3e635; font-weight:700;"></span></p>
+      </div>
+      <button onclick="logout()" class="btn" style="background:#ef4444; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">تسجيل الخروج</button>
+    </div>
+
+    <!-- التحكم في خطط الأسعار الخاصة بصاحب الملعب -->
+    <div class="glass-card" style="padding: 25px; margin-bottom: 30px;">
+      <h3 style="color:#22c55e; margin-bottom:15px;">⚙ لوحة التحكم بأسعار خطط ملاعبك الخاصة</h3>
+      <p style="color:#cbd5e1; font-size:0.9rem; margin-bottom:15px;">يمكنك هنا تخصيص ورفع/خفض سعر باقات ملاعبك الحقيقية التي تظهر للجمهور في منطقتك</p>
+      <div style="display:flex; gap:15px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:200px;">
+          <label style="display:block; margin-bottom:5px; font-size:0.85rem;">سعر ساعة الحجز الفردي (EGP)</label>
+          <input type="number" id="customHourlyRate" placeholder="مثال: 150" class="form-input" style="margin:0;">
+        </div>
+        <div style="flex:1; min-width:200px;">
+          <label style="display:block; margin-bottom:5px; font-size:0.85rem;">سعر الاشتراك الشهري (EGP)</label>
+          <input type="number" id="customSubRate" placeholder="مثال: 1000" class="form-input" style="margin:0;">
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button onclick="saveOwnerPrices()" class="btn btn-gradient" style="border:none; height:42px; padding:0 20px; cursor:pointer; font-weight:bold; border-radius:5px;">تطبيق وحفظ الأسعار الجديدة</button>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">طلبات الحجز الواردة بملاعبك</h3>
+    <div class="glass-card" style="padding: 20px; overflow-x: auto;">
+      <div id="noBookings" class="hidden" style="text-align:center; padding:30px; color:#94a3b8;">
+        <h3>لا توجد أي طلبات حجز مسجلة بملاعبك حالياً ⚽</h3>
+      </div>
+      <table class="requests-table" id="ownerTable">
+        <thead>
+          <tr>
+            <th>اسم اللاعب</th>
+            <th>رقم الهاتف</th>
+            <th>نوع ومقاس الملعب</th>
+            <th>التاريخ</th>
+            <th>وقت البدء</th>
+            <th>عدد الساعات</th>
+            <th>التحكم بالحجز</th>
+          </tr>
+        </thead>
+        <tbody id="bookingsTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if(!user || user.role !== 'owner') {
+        alert('هذه الصفحة مخصصة لأصحاب وملاك الملاعب فقط!');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      document.getElementById('ownerName').innerText = user.username;
+      document.getElementById('ownerLoc').innerText = user.location;
+
+      try {
+        const pRes = await fetch(`http://localhost:3000/api/prices?location=${encodeURIComponent(user.location)}`);
+        if(pRes.ok) {
+          const pData = await pRes.json();
+          document.getElementById('customHourlyRate').value = pData.hourlyRate;
+          document.getElementById('customSubRate').value = pData.subRate;
+        }
+      } catch(e) {}
+
+      try {
+        const res = await fetch(`http://localhost:3000/api/bookings?location=${encodeURIComponent(user.location)}`);
+        const bookings = await res.json();
+        
+        const tbody = document.getElementById('bookingsTableBody');
+        const noBookingsDiv = document.getElementById('noBookings');
+        const tableElement = document.getElementById('ownerTable');
+
+        if(bookings.length === 0) {
+            noBookingsDiv.classList.remove('hidden');
+            tableElement.style.display = 'none';
+            return;
+        }
+
+        bookings.forEach(book => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>⚽ ${book.playerName}</td>
+            <td><a href="tel:${book.phone}" style="color: #cbd5e1;">${book.phone}</a></td>
+            <td>${book.fieldType}</td>
+            <td>${book.date}</td>
+            <td>${book.time}</td>
+            <td><span style="color:#a3e635; font-weight:bold;">${book.hours || 1} ساعة</span></td>
+            <td>
+              <button onclick="cancelBooking(${book.id})" class="btn-reject">رفض / إلغاء الحجز</button>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+
+      } catch (err) {
+        alert('حدث خطأ أثناء الاتصال بالسيرفر لجلب الحجوزات.');
+      }
+    });
+
+    async function cancelBooking(id) {
+      if(!confirm('هل أنت متأكد تماماً من رغبتك في رفض حجز هذا اللاعب وإلغائه نهائياً؟')) return;
+      
+      try {
+        const res = await fetch(`http://localhost:3000/api/bookings/${id}`, {
+          method: 'DELETE'
+        });
+        const data = await res.json();
+        alert(data.message);
+        window.location.reload();
+      } catch(err) {
+        alert('فشل الاتصال بالسيرفر لإلغاء الحجز.');
+      }
+    }
+
+    async function saveOwnerPrices() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const hourlyRate = document.getElementById('customHourlyRate').value;
+      const subRate = document.getElementById('customSubRate').value;
+
+      if(!hourlyRate || !subRate) return alert('الرجاء تعبئة الأسعار الجديدة بشكل صحيح أولاً');
+
+      try {
+        const res = await fetch('http://localhost:3000/api/prices', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            location: user.location,
+            hourlyRate: parseInt(hourlyRate),
+            subRate: parseInt(subRate)
+          })
+        });
+        const data = await res.json();
+        alert(data.message);
+      } catch(err) {
+        alert('حدث خطأ أثناء حفظ خطة الأسعار الجديدة.');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

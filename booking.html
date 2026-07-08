@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حجز ملعبك | Kick Off</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <section class="booking-page">
+    <div class="booking-form glass-card animate-fade-in">
+      <h2>احجز ملعبك الاحترافي</h2>
+      <form id="realBookingForm">
+        <input type="text" id="bookName" placeholder="اسمك بالكامل" required class="form-input">
+        <input type="tel" id="bookPhone" placeholder="رقم الهاتف للتواصل" required class="form-input">
+
+        <select id="bookLocation" required class="form-input">
+          <option value="">اختر مكان وموقع الملعب</option>
+          <option value="القاهرة">القاهرة</option>
+          <option value="الجيزة">الجيزة</option>
+          <option value="الإسكندرية">الإسكندرية</option>
+        </select>
+
+        <select id="bookType" required class="form-input">
+          <option value="">اختر نوع ومقاس الملعب</option>
+          <option value="الملعب الخماسي 5x5">الملعب الخماسي 5x5</option>
+          <option value="الملعب السباعي 7x7">الملعب السباعي 7x7</option>
+          <option value="ستاد VIP المضيء">ستاد VIP المضيء</option>
+        </select>
+
+        <div style="display:flex; gap:10px;">
+          <input type="date" id="bookDate" required class="form-input" style="width:50%;">
+          <input type="time" id="bookTime" required class="form-input" style="width:50%;">
+        </div>
+
+        <label style="color:#22c55e; margin-bottom:5px; font-weight:600; display:block;">كم ساعة تريد حجز الملعب؟</label>
+        <input type="number" id="bookHours" placeholder="عدد الساعات (مثال: 2)" min="1" max="6" value="1" required class="form-input">
+
+        <button type="submit" class="btn btn-gradient" style="width:100%; border:none; margin-top:10px;">تأكيد الحجز الفوري</button>
+      </form>
+
+      <div class="review-box" style="margin-top:25px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;">
+        <h3 style="font-size:1.1rem; color:#a3e635; margin-bottom:10px;">شاركنا برأيك وتجربتك معنا</h3>
+        <textarea id="playerReviewText" placeholder="اكتب رأيك أو اقتراحك هنا بكل صراحة..." class="form-input" style="height:70px; resize:none;"></textarea>
+        <button type="button" onclick="sendPlayerReview()" class="btn" style="background:#2563eb; color:white; width:100%; padding:8px; border:none; cursor:pointer; border-radius:5px;">إرسال رأيي</button>
+      </div>
+
+      <a href="index.html" class="back-btn" style="display:block; text-align:center; margin-top:15px; color:#94a3b8; text-decoration:none;">← العودة للرئيسية</a>
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      if(user) { document.getElementById('bookName').value = user.username; }
+
+      document.getElementById('realBookingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if(!user) {
+          alert('عذراً! يجب عليك تسجيل الدخول أولاً كـ لاعب لتتمكن من حجز الملاعب.');
+          window.location.href = 'auth.html';
+          return;
+        }
+
+        const bookingData = {
+          playerName: document.getElementById('bookName').value,
+          phone: document.getElementById('bookPhone').value,
+          location: document.getElementById('bookLocation').value, 
+          fieldType: document.getElementById('bookType').value,
+          date: document.getElementById('bookDate').value,
+          time: document.getElementById('bookTime').value,
+          hours: document.getElementById('bookHours').value,
+          userId: user.id
+        };
+
+        try {
+          const res = await fetch('http://localhost:3000/api/bookings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookingData)
+          });
+          
+          const data = await res.json();
+          if(res.ok) {
+            alert(data.message);
+            window.location.href = 'index.html';
+          } else {
+            alert(data.message);
+          }
+        } catch(err) {
+          alert('فشل الاتصال بسيرفر الحجوزات، تأكد من تشغيل السيرفر أولاً!');
+        }
+      });
+    });
+
+    async function sendPlayerReview() {
+      const user = JSON.parse(localStorage.getItem('user'));
+      const reviewText = document.getElementById('playerReviewText').value;
+      if(!reviewText) return alert('الرجاء كتابة رأيك قبل الضغط على إرسال');
+
+      try {
+        const res = await fetch('http://localhost:3000/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: user ? user.username : 'لاعب زائر',
+            review: reviewText
+          })
+        });
+        const data = await res.json();
+        if(res.ok) {
+          alert(data.message);
+          document.getElementById('playerReviewText').value = '';
+        }
+      } catch(err) { alert('فشل إرسال التقييم للسيرفر.'); }
+    }
+  </script>
+</body>
+</html>
