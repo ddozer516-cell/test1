@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Kick Off | منصة حجز الملاعب الأولى</title>
+  <title>Kick Off | منصة حجز Mالملاعب الأولى</title>
   <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- ================= NAVBAR ================= -->
   <header>
     <nav class="navbar">
       <h1 class="logo">Kick Off</h1>
@@ -19,27 +18,26 @@
         <li><a href="#pricing" class="nav-item">خطط الأسعار</a></li>
         <li><a href="#reviews" class="nav-item">آراء اللاعبين</a></li>
         <li><a href="#faq" class="nav-item">الأسئلة الشائعة</a></li>
-        <u1>
-     <div id="authSection">
+      </ul>
+      <div id="authSection">
         <a href="auth.html" class="btn btn-nav">تسجيل الدخول / اشتراك</a>
       </div>
     </nav>
   </header>
 
-  <!-- ================= HERO SECTION ================= -->
   <section class="hero animate-fade-in">
     <div class="hero-text">
-      <!-- صوره احترافية خلف الكلمة المطلوبة -->
       <div class="hero-title-box">
         <h2>احجز ملعبك الاحترافي الآن بكل سهوله</h2>
-       
       </div>
+      
+      <div id="heroOwnerBtnContainer"></div>
+      
       <p>أفضل ملاعب كرة القدم العشبية والمضاءة في انتظارك أنت وفريقك بجودة عالمية.</p>
       <a href="booking.html" class="btn btn-gradient">احجز ملعبك الآن</a>
     </div>
   </section>
 
-  <!-- ================= FIELDS SECTION ================= -->
   <section class="fields" id="fields">
     <h2 class="section-title">الملاعب المتميزة</h2>
     <div class="field-container">
@@ -67,7 +65,6 @@
     </div>
   </section>
 
-  <!-- ================= PRICING SECTION (REAL PLANS) ================= -->
   <section class="pricing" id="pricing">
     <h2 class="section-title">خطط الأسعار والاشتراكات الحقيقية</h2>
     <p style="text-align:center; color:#94a3b8; margin-top:-15px; margin-bottom:40px;">ادخل على خطط واشتراكات وأسعار بجد تناسب استخدامك الشخصي أو فريقك</p>
@@ -100,7 +97,6 @@
     </div>
   </section>
 
-  <!-- ================= REVIEWS SECTION ================= -->
   <section class="reviews" id="reviews">
     <h2 class="section-title">آراء وتقييمات اللاعبين</h2>
     <div class="reviews-container" id="dynamicReviewsContainer">
@@ -115,7 +111,6 @@
     </div>
   </section>
 
-  <!-- ================= FAQ SECTION ================= -->
   <section class="faq" id="faq">
     <h2 class="section-title">الأسئلة الشائعة</h2>
     <div class="faq-container">
@@ -130,14 +125,12 @@
     </div>
   </section>
 
-  <!-- ================= FOOTER ================= -->
   <footer class="contact">
     <p>© 2026 Kick Off - جميع الحقوق محفوظة لخدمات حجز الملاعب الاحترافية</p>
   </footer>
 
   <script src="script.js"></script>
   <script>
-    // جلب التقييمات الحقيقية من السيرفر وعرضها
     async function loadReviews() {
       try {
         const res = await fetch('http://localhost:3000/api/reviews');
